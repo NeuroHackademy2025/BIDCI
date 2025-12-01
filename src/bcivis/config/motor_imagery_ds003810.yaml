@@ -2,6 +2,7 @@ bids_root: C:/Users/ncohe/Desktop/bci_vis/BIDS_dataset/motor_imagery_ds003810
 task: MIvsRest
 subjects: ["02", "04"]
 runs: ["1","2"]
+verbose: False
 
 class_map:
   dominant_hand: 1
@@ -40,9 +41,8 @@ visualization:
 
 sanity_check:
   enable_plots: true
-  
 output:
-  base_directory: "C:/Users/ncohe/Desktop/bci_vis/results"
+  base_directory: "C:/Users/ncohe/Desktop/Github projects/BIDCI/results"
 
 save_figures:
   enabled: true
