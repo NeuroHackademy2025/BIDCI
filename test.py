@@ -2,7 +2,7 @@ import yaml
 from src.bcivis.manager.core import DatasetManager
 
 
-config_path = "D:/Niv/bci_vis/bci-vis/src/bcivis/config/motor_imagery_ds003810.yaml"
+config_path = "C:/Users/ncohe/Desktop/Github projects/BIDCI/src/bcivis/config/motor_imagery_ds003810.yaml"
 with open(config_path, "r") as f:
     config = yaml.safe_load(f)
 
