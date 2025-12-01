@@ -61,11 +61,11 @@ class DatasetManager:
                 print("Generating plots...")
                 raw = loader.get_raw()
                 apply_montage(raw, self.config)
-                plot_sensors(raw, self.config)
-                plot_raw(raw, self.config)
-                plot_psd(raw, self.config)
+                plot_sensors(raw, self.config,subject, run)
+                plot_raw(raw, self.config, subject, run)
+                plot_psd(raw, self.config, subject, run)    
 
                 event_labels = list(loader.event_id.keys())
-                plot_all_conditionwise(self.epochs_list[i], event_labels, self.config)
+                plot_all_conditionwise(self.epochs_list[i], event_labels, self.config, subject, run)
 
                 print("Plots generated.")
