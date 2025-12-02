@@ -1,6 +1,6 @@
 import mne
 import matplotlib.pyplot as plt
-from src.bcivis.utils.helpers import get_save_path  
+from src.bidci.utils.helpers import get_save_path  
 import os
 
 def plot_raw(raw, config, subject=None, run=None):
