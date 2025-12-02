@@ -1,14 +1,11 @@
-import os
+from pathlib import Path
 import yaml
 from bidci.manager.core import DatasetManager
 
-
-config_path = os.path.join(os.path.dirname(__file__), "src", "bidci", "config", "motor_imagery_ds003810.yaml")
-with open(config_path, "r") as f:
-    config = yaml.safe_load(f)
-
-manager = DatasetManager(config=config)
-manager.load_all()
-manager.preprocess_all()
-manager.summarize_all(with_plots=config.get("sanity_check", {}).get("enable_plots", False))
-
+if __name__ == "__main__":
+    # Path to the config file, relative to this test.py file
+    config_path = "C:/Users/ncohe/Desktop/Github projects/BIDCI/src/bidci/config/motor_imagery_ds003810.yaml"
+    manager = DatasetManager.from_yaml(config_path)
+    manager.load_all()
+    manager.preprocess_all()
+    manager.summarize_all()

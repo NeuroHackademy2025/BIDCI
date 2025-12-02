@@ -1,15 +1,37 @@
+from pathlib import Path
+import yaml
 from src.bidci.io.loader import BIDSDataLoader
 from src.bidci.preprocessing.cleaning_pipeline import preprocess_raw
 from src.bidci.vis.visualization import apply_montage, plot_all_conditionwise, plot_raw, plot_psd, plot_sensors, plot_all_conditionwise
                 
 
 class DatasetManager:
-    def __init__(self, config):
+    def __init__(self, config:dict):
         self.config = config
         self.loaders = []
         self.epochs_list = []
 
+    @classmethod
+    def from_yaml(cls, config_path: str | Path) -> "DatasetManager":
+        """
+        Load a YAML configuration file and return an initialized DatasetManager.
 
+        Parameters
+        ----------
+        config_path : str or Path
+            Path to the YAML configuration file.
+
+        Returns
+        -------
+        DatasetManager
+            A DatasetManager instance constructed from the given config.
+        """
+        config_path = Path(config_path)
+        with config_path.open("r") as f:
+            config = yaml.safe_load(f)
+        return cls(config)
+    
+    
     def load_all(self):
         subjects = self.config.get("subjects") or [self.config.get("subject")]
         runs = self.config.get("runs") or [self.config.get("run")]
@@ -45,7 +67,11 @@ class DatasetManager:
         return self.epochs_list
     
 
-    def summarize_all(self, with_plots=False):
+    def summarize_all(self, with_plots: bool | None = None):
+        # If caller didn't provide a value, read it from the manager's config
+        if with_plots is None:
+            with_plots = bool(self.config.get("sanity_check", {}).get("enable_plots", False))
+
         for i, loader in enumerate(self.loaders):
             print(f"\n✅ Loader {i+1}")
             print(f"Subject: {loader.subject} | Run: {loader.run}")
