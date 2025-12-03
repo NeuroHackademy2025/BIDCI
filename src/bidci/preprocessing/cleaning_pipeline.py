@@ -1,19 +1,22 @@
 from mne import Epochs, pick_types
 from mne.io import Raw
+from bidci.config.config_model import ConfigModel
 
-def preprocess_raw(raw: Raw, event_id: dict, events, config: dict):
-    pre_cfg = config.get("preprocessing", {})
-    
+
+def preprocess_raw(raw: Raw, event_id: dict, events, config: ConfigModel):
+    pre_cfg = config.preprocessing
+
     # Timing
-    tmin = pre_cfg.get("tmin", -0.5)
-    tmax = pre_cfg.get("tmax", 2.5)
-    baseline = pre_cfg.get("baseline", None)
-    load_data = pre_cfg.get("load_data", False)
+    tmin = pre_cfg.tmin if pre_cfg.tmin is not None else -0.5
+    tmax = pre_cfg.tmax if pre_cfg.tmax is not None else 2.5
+    baseline = pre_cfg.baseline
+    load_data = bool(pre_cfg.load_data)
 
     # Filtering
-    l_freq, h_freq = pre_cfg.get("bandpass", [1., 40.])
-    already_filtered = pre_cfg.get("already_filtered", False)
-    original_band = tuple(pre_cfg.get("original_band", [0.5, 45.]))
+    bandpass = pre_cfg.bandpass or [1.0, 40.0]
+    l_freq, h_freq = bandpass[0], bandpass[1]
+    already_filtered = bool(pre_cfg.already_filtered)
+    original_band = tuple(pre_cfg.original_band) if pre_cfg.original_band is not None else (0.5, 45.0)
     
     if load_data:
          raw.load_data()
@@ -27,7 +30,7 @@ def preprocess_raw(raw: Raw, event_id: dict, events, config: dict):
         print(f"⚠️ Already filtered in {original_band}, but requested: ({l_freq}, {h_freq})")
 
     # Notch filter
-    notch_freq = pre_cfg.get("notch_filter", 50)
+    notch_freq = pre_cfg.notch_filter
     if notch_freq and load_data:
         raw.notch_filter(freqs=notch_freq)
 
