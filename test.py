@@ -1,5 +1,3 @@
-from pathlib import Path
-import yaml
 from bidci.manager.core import DatasetManager
 
 if __name__ == "__main__":
