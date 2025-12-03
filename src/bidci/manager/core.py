@@ -3,6 +3,7 @@ import yaml
 from src.bidci.io.loader import BIDSDataLoader
 from src.bidci.preprocessing.cleaning_pipeline import preprocess_raw
 from src.bidci.vis.visualization import apply_montage, plot_all_conditionwise, plot_raw, plot_psd, plot_sensors, plot_all_conditionwise
+from src.bidci.config_model import ConfigModel
                 
 
 class DatasetManager:
@@ -26,10 +27,18 @@ class DatasetManager:
         DatasetManager
             A DatasetManager instance constructed from the given config.
         """
-        config_path = Path(config_path)
-        with config_path.open("r") as f:
-            config = yaml.safe_load(f)
-        return cls(config)
+        # Normalize and read the YAML file using UTF-8
+        config_path = Path(config_path).expanduser().resolve()
+        with config_path.open("r", encoding="utf-8") as f:
+            raw = yaml.safe_load(f)
+
+        # Validate and coerce with Pydantic. This returns a typed ConfigModel.
+        cfg = ConfigModel.model_validate(raw)
+
+        # Pass the typed model to DatasetManager. The manager will keep `self.config`
+        # as the validated `ConfigModel` instance. If you prefer a plain dict, use
+        # `cfg.model_dump()` instead.
+        return cls(config=cfg)
     
     
     def load_all(self):
