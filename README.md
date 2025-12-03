@@ -12,3 +12,18 @@ At this stage, the main entry point is a configuration file (YAML) and a simple 
 2. Runs a preprocessing pipeline.
 3. Generates optional summary plots for each subject and run.
 
+Configuration and typed model
+-----------------------------
+
+This project now uses a Pydantic `ConfigModel` to validate and coerce configuration values read from YAML. The runtime flow is:
+
+- `config.yaml` (YAML) -> read with `yaml.safe_load`
+- validated/coerced into `ConfigModel` via `ConfigModel.model_validate(raw)`
+- used in code as a typed object (e.g., `config.preprocessing.tmin`)
+
+Notes:
+- The YAML file is still required as the canonical configuration input for reproducible runs.
+- `ConfigModel` provides defaults and clear validation errors; required fields (e.g., `subjects`, `runs`) must be present or the loader will raise a clear error.
+- If you prefer programmatic configuration, you can construct `ConfigModel` directly in Python instead of using YAML.
+
+
