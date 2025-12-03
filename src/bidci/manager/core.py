@@ -3,7 +3,7 @@ import yaml
 from src.bidci.io.loader import BIDSDataLoader
 from src.bidci.preprocessing.cleaning_pipeline import preprocess_raw
 from src.bidci.vis.visualization import apply_montage, plot_all_conditionwise, plot_raw, plot_psd, plot_sensors, plot_all_conditionwise
-from src.bidci.config_model import ConfigModel
+from bidci.config.config_model import ConfigModel
                 
 
 class DatasetManager:
