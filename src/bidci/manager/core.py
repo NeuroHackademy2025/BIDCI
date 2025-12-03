@@ -1,14 +1,15 @@
 from pathlib import Path
 import yaml
-from src.bidci.io.loader import BIDSDataLoader
-from src.bidci.preprocessing.cleaning_pipeline import preprocess_raw
-from src.bidci.vis.visualization import apply_montage, plot_all_conditionwise, plot_raw, plot_psd, plot_sensors, plot_all_conditionwise
+from bidci.io.loader import BIDSDataLoader
+from bidci.preprocessing.cleaning_pipeline import preprocess_raw
+from bidci.vis.visualization import apply_montage, plot_all_conditionwise, plot_raw, plot_psd, plot_sensors
 from bidci.config.config_model import ConfigModel
-                
+
 
 class DatasetManager:
-    def __init__(self, config:dict):
-        self.config = config
+    def __init__(self, config: ConfigModel):
+        """Expect a validated `ConfigModel` instance and store it."""
+        self.config: ConfigModel = config
         self.loaders = []
         self.epochs_list = []
 
@@ -34,29 +35,27 @@ class DatasetManager:
 
         # Validate and coerce with Pydantic. This returns a typed ConfigModel.
         cfg = ConfigModel.model_validate(raw)
-
-        # Pass the typed model to DatasetManager. The manager will keep `self.config`
-        # as the validated `ConfigModel` instance. If you prefer a plain dict, use
-        # `cfg.model_dump()` instead.
         return cls(config=cfg)
     
     
     def load_all(self):
-        subjects = self.config.get("subjects") or [self.config.get("subject")]
-        runs = self.config.get("runs") or [self.config.get("run")]
+        # With the full typed migration we require `subjects` and `runs`
+        # to be provided as lists on the `ConfigModel` instance.
+        subjects = self.config.subjects
+        runs = self.config.runs
 
         if not subjects or not runs:
-            raise ValueError("Subjects and runs must be specified in the configuration.")
+            raise ValueError("`subjects` and `runs` must be provided as lists in the configuration (ConfigModel).")
         
         for subject in subjects:
             for run in runs:
                 loader = BIDSDataLoader(
-                    bids_root=self.config["bids_root"],
+                    bids_root=self.config.bids_root,
                     subject=subject,
-                    task=self.config["task"],
+                    task=self.config.task,
                     run=run,
                     config=self.config,
-                    verbose=self.config.get("verbose", False)
+                    verbose=bool(self.config.verbose)
                 )
                 loader.load()
                 self.loaders.append(loader)
@@ -79,7 +78,7 @@ class DatasetManager:
     def summarize_all(self, with_plots: bool | None = None):
         # If caller didn't provide a value, read it from the manager's config
         if with_plots is None:
-            with_plots = bool(self.config.get("sanity_check", {}).get("enable_plots", False))
+            with_plots = bool(self.config.sanity_check.enable_plots)
 
         for i, loader in enumerate(self.loaders):
             print(f"\n✅ Loader {i+1}")
@@ -96,9 +95,9 @@ class DatasetManager:
                 print("Generating plots...")
                 raw = loader.get_raw()
                 apply_montage(raw, self.config)
-                plot_sensors(raw, self.config,subject, run)
+                plot_sensors(raw, self.config, subject, run)
                 plot_raw(raw, self.config, subject, run)
-                plot_psd(raw, self.config, subject, run)    
+                plot_psd(raw, self.config, subject, run)
 
                 event_labels = list(loader.event_id.keys())
                 plot_all_conditionwise(self.epochs_list[i], event_labels, self.config, subject, run)
