@@ -4,4 +4,6 @@ This package contains Pydantic config models used to validate YAML configuration
 files for the project.
 """
 
-__all__ = ["config_model"]
+from .config_model import ConfigModel
+
+__all__ = ["ConfigModel"]
