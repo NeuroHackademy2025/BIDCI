@@ -20,7 +20,7 @@ class VisualizationConfig(BaseModel):
     n_channels: Optional[int] = 8
     scalings: dict = Field(default_factory=dict)
     use_montage: bool = False
-    montage_kind: Optional[str] = "standard_1020"
+    montage_kind: str = "standard_1020"
     psd_fmin: Optional[float] = 0.1
     psd_fmax: Optional[float] = 45.0
     psd_average: bool = True
