@@ -4,6 +4,15 @@ subjects: ["02", "04"]
 runs: ["1","2"]
 verbose: False
 
+
+dataset:
+  name: ds003810
+  reference: "Peterson et al., Data in Brief 42 (2022) 108225"
+  sampling_rate: 125
+  original_band: [0.5, 45]   
+  paradigm: motor_imagery
+  modalities: ["eeg"]
+
 class_map:
   dominant_hand: 1
   rest: 2
@@ -14,13 +23,13 @@ event_id:
 
 preprocessing:
   load_data: true
-  already_filtered: true
+  already_filtered: False
   original_band: [0.5, 45]
   bandpass: [1, 40]
   notch_filter: 50
-  tmin: 0.5
-  tmax: 2.5
-  baseline: [0.5, 1.0]  
+  tmin: -0.5
+  tmax: 4.0
+  baseline: [-0.5, 0.0]  
 
 visualization:
   duration: 100.0
@@ -36,7 +45,7 @@ visualization:
   picks: eeg
   show_events: False
   topomap_times: [0.5, 1.0, 1.5]
-  baseline: [0.5, 1.0]
+  baseline: [-0.5, 0.0]  
 
 
 sanity_check:
